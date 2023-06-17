@@ -1,9 +1,19 @@
+from typing import Any, List, Optional, Union
+
+from langchain.base_language import BaseLanguageModel
+from langchain.callbacks.manager import Callbacks
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.schema import SystemMessage, HumanMessage
+
 from agent_sim.prompts_library import (
     INPUT_PROMPT,
     REFLECT_USER_PROMPT,
     REFLECT_SYSTEM_PROMPT,
 )
-from typing import Any, List, Union, Callable
 
 
 class Agent:
@@ -20,8 +30,8 @@ class Agent:
 
     def __init__(
         self,
-        respond_model: Callable,
-        reflect_model: Callable,
+        respond_model: BaseLanguageModel,
+        reflect_model: BaseLanguageModel,
         inception_prompt: str,
         role_name: str,
     ) -> None:
@@ -42,10 +52,17 @@ class Agent:
         Responds to a message based on an input and the previous memory.
         """
 
-        system_prompt = self.inception_prompt
-        user_prompt = INPUT_PROMPT.format("\n".join(self.memory), input_message)
+        human_prompt = INPUT_PROMPT.format("\n".join(self.memory), input_message)
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                SystemMessagePromptTemplate.from_template(self.inception_prompt),
+                HumanMessagePromptTemplate.from_template(human_prompt),
+            ]
+        ).format_messages(memory=self.memory)
 
-        return self.respond_model(system_prompt, user_prompt)
+        return self.respond_model.predict_messages(
+            prompt, tags=[self.role_name, "respond"]
+        ).content
 
     def add_to_memory(self, role: str, message: str) -> None:
         """
@@ -74,9 +91,15 @@ class Agent:
             # always leave at least two messages for immediate context
             num_messages = min(10, len(self.memory) - 2)
             messages_to_process = "\n".join(self.memory[:num_messages])
-            processed_messages = self.reflect_model(
-                REFLECT_SYSTEM_PROMPT, REFLECT_USER_PROMPT.format(messages_to_process)
-            )
+            processed_messages = self.reflect_model.predict_messages(
+                [
+                    SystemMessage(content=REFLECT_SYSTEM_PROMPT),
+                    HumanMessage(
+                        content=REFLECT_USER_PROMPT.format(messages_to_process)
+                    ),
+                ],
+                tags=[self.role_name, "reflect"],
+            ).content
 
             # Replace the messages in memory with the processed output
             self.memory = [processed_messages] + self.memory[num_messages:]

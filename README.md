@@ -23,5 +23,5 @@ poetry run langchain plus start
 ### 3. Run the notebook
 
 ```bash
-poetry run jupyter notebook
+OPENAI_API_KEY="<your_api_key>" poetry run jupyter notebook
 ```
