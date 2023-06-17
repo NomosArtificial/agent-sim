@@ -6,4 +6,22 @@ To enable more deployments of LLMs in higher stakes use-cases, we are conducting
 
 Our [initial focus is on fiduciary duties](https://law.stanford.edu/publications/large-language-models-as-fiduciaries-a-case-study-toward-robustly-communicating-with-artificial-intelligence-through-legal-standards/).
 
+## How to run
 
+### 1. Install dependencies
+
+```bash
+poetry install
+```
+
+### 2. Start the monitoring server
+
+```bash
+poetry run langchain plus start
+```
+
+### 3. Run the notebook
+
+```bash
+poetry run jupyter notebook
+```

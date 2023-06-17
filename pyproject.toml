@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "agent-sim"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "agent_sim"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+langchain = "^0.0.202"
+openai = "^0.27.8"
+
+
+[tool.poetry.group.dev.dependencies]
+notebook = "^6.5.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
