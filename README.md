@@ -25,3 +25,18 @@ poetry run langchain plus start
 ```bash
 OPENAI_API_KEY="<your_api_key>" poetry run jupyter notebook
 ```
+
+### Components
+
+### 1. Agents
+
+We have provided a simple implementation of an agent that supports conversation and memory as a starting point. Here are a couple of its features:
+
+1. Model Instantiation: The agents could be generated with any model through langchain and will take in a role and an inception (role-definition) prompt
+2. Memory: The agent has a selective and alterable conversation memory such that it could converse without remembering the conversation and additional/altered
+   memory could be injected
+3. Reflection: To support longer memory windows, a memory summarization function (called "reflection") is automatically triggered as the conversation gets longer.
+
+### 2. Simulation Environment
+
+[TODO]
