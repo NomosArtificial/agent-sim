@@ -47,12 +47,22 @@ class Agent:
         self.memory: List[str] = []
         self.memory_length: int = 0
 
-    def respond(self, input_message: str) -> Union[str, Any]:
+    def respond(
+        self, input_role: str, input_message: str, remember: bool = True
+    ) -> Union[str, Any]:
         """
-        Responds to a message based on an input and the previous memory.
+        Responds to a single message based on an input and the previous memory.
+
+        memory could be turned off
         """
 
-        human_prompt = INPUT_PROMPT.format("\n".join(self.memory), input_message)
+        human_prompt = INPUT_PROMPT.format(
+            role_name=self.role_name,
+            history="\n".join(self.memory),
+            message=input_message,
+            input_role=input_role,
+        )
+
         prompt = ChatPromptTemplate.from_messages(
             [
                 SystemMessagePromptTemplate.from_template(self.inception_prompt),
@@ -60,9 +70,14 @@ class Agent:
             ]
         ).format_messages(memory=self.memory)
 
-        return self.respond_model.predict_messages(
+        response = self.respond_model.predict_messages(
             prompt, tags=[self.role_name, "respond"]
         ).content
+
+        if remember:
+            self.add_to_memory(input_role, input_message)
+            self.add_to_memory(self.role_name, response)
+        return response
 
     def add_to_memory(self, role: str, message: str) -> None:
         """
@@ -76,8 +91,9 @@ class Agent:
         self.memory.append(message)
         self.memory_length += len(message)
 
-        # Summarize messages if too long
-        self.reflect()
+        # Summarize messages if they get too long
+        if self.memory_length >= 1000:
+            self.reflect()
 
     def reflect(self) -> None:
         """
@@ -86,23 +102,25 @@ class Agent:
         If the memory_length is too long, it selects a number of messages from the memory,
         uses the model to summarize them, and replaces them in the memory with the summary.
         """
-        if self.memory_length >= 1000:
-            # Process the top 10 messages or however much is available,
-            # always leave at least two messages for immediate context
-            num_messages = min(10, len(self.memory) - 2)
-            messages_to_process = "\n".join(self.memory[:num_messages])
-            processed_messages = self.reflect_model.predict_messages(
-                [
-                    SystemMessage(content=REFLECT_SYSTEM_PROMPT),
-                    HumanMessage(
-                        content=REFLECT_USER_PROMPT.format(messages_to_process)
-                    ),
-                ],
-                tags=[self.role_name, "reflect"],
-            ).content
 
-            # Replace the messages in memory with the processed output
-            self.memory = [processed_messages] + self.memory[num_messages:]
+        # Process the top 10 messages or however much is available,
+        # always leave at least two messages for immediate context
+        num_messages = min(10, len(self.memory) - 2)
+        messages_to_process = "\n".join(self.memory[:num_messages])
+        processed_messages = self.reflect_model.predict_messages(
+            [
+                SystemMessage(
+                    content=REFLECT_SYSTEM_PROMPT.format(role_name=self.role_name)
+                ),
+                HumanMessage(
+                    content=REFLECT_USER_PROMPT.format(history=messages_to_process)
+                ),
+            ],
+            tags=[self.role_name, "reflect"],
+        ).content
 
-            # Recalculate memory_length
-            self.memory_length = sum(len(message) for message in self.memory)
+        # Replace the messages in memory with the processed output
+        self.memory = [processed_messages] + self.memory[num_messages:]
+
+        # Recalculate memory_length
+        self.memory_length = sum(len(message) for message in self.memory)
