@@ -34,6 +34,7 @@ class Agent:
         reflect_model: BaseLanguageModel,
         inception_prompt: str,
         role_name: str,
+        max_context_length: int = 1000,
     ) -> None:
         """
         Constructs the necessary attributes for the Agent object.
@@ -43,7 +44,7 @@ class Agent:
         self.reflect_model = reflect_model
         self.inception_prompt = inception_prompt
         self.role_name = role_name
-
+        self.max_context_length = max_context_length
         self.memory: List[str] = []
         self.memory_length: int = 0
 
@@ -92,7 +93,7 @@ class Agent:
         self.memory_length += len(message)
 
         # Summarize messages if they get too long
-        if self.memory_length >= 1000:
+        if self.memory_length >= self.max_context_length:
             self.reflect()
 
     def reflect(self) -> None:
