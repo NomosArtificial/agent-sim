@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from langchain.callbacks.manager import tracing_v2_enabled
 
-from agent_sim.agent import Agent
+from agent_sim.player import Agent
 
 
 def simulation(
