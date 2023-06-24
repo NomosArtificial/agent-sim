@@ -1,10 +1,6 @@
-from typing import Any, List, Optional, Union
-
-import os
-import openai
+from typing import Any, List, Union
 
 from langchain.base_language import BaseLanguageModel
-from langchain.callbacks.manager import Callbacks
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,

@@ -3,11 +3,11 @@ from typing import List, Optional
 
 from langchain.callbacks.manager import tracing_v2_enabled
 
-from agent_sim.player import Agent
+from agent_sim.player import Player
 
 
 def simulation(
-    agents: List[Agent], seed_message: str, simulation_name: Optional[str] = None
+    agents: List[Player], seed_message: str, simulation_name: Optional[str] = None
 ):
     """
     Simulates a conversation between two agents.
