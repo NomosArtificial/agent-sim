@@ -6,6 +6,14 @@ To enable more deployments of LLMs in higher stakes use-cases, we are conducting
 
 Our [initial focus is on fiduciary duties](https://law.stanford.edu/publications/large-language-models-as-fiduciaries-a-case-study-toward-robustly-communicating-with-artificial-intelligence-through-legal-standards/).
 
+## How to deploy an OSS model
+
+### Deploy Falcon-40B-Instruct with Modal
+
+```bash
+make deploy_modal_falcon_40b
+```
+
 ## How to run
 
 ### 1. Install dependencies
