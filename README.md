@@ -37,6 +37,8 @@ We have provided a simple implementation of an agent that supports conversation 
    memory could be injected
 3. Reflection: To support longer memory windows, a memory summarization function (called "reflection") is automatically triggered as the conversation gets longer.
 
+Please feel free to modify this class or create your own as needed
+
 ### 2. Simulation Environment
 
-[TODO]
+We have provided some examples in Simulation Examples.ipynb. This is where you can get creative!
