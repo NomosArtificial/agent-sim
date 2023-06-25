@@ -41,4 +41,4 @@ Please feel free to modify this class or create your own as needed
 
 ### 2. Simulation Environment
 
-We have provided some examples in Simulation Examples.ipynb. This is where you can get creative!
+We have provided some examples in Simulation Examples.ipynb but this is where you can get creative!
